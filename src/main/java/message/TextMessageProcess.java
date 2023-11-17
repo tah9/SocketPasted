@@ -1,35 +1,41 @@
 package message;
 
-import pasted.ClipboardListener;
+import pasted.SysClipboardListener;
+import socket.DataSocket;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
-public class TextMessageProcess implements MessageProcess {
-    public void receive(byte[] data) {
-        //先暂停剪切板监听
-        ClipboardListener.fromSocket=true;
+public class TextMessageProcess implements MessageProcess<String> {
 
-        String text = new String(data, StandardCharsets.UTF_8);
+    public String getData(DataSocket dso) {
+        return dso.readUTF();
+    }
+
+    @Override
+    public void send(DataSocket targetDso, String text) {
+        targetDso.writeChar(DescribeHeader.Pasted_Text);
+        targetDso.writeUTF(text);
+        targetDso.flush();
+    }
+
+    @Override
+    public void receive(DataSocket dis) {
+
+        String text = dis.readUTF();
+        System.out.println("接收到的" + text);
         // 创建一个StringSelection对象来保存文本
         StringSelection stringSelection = new StringSelection(text);
 
         // 获取系统剪切板
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
+        // 添加到剪切板，在此之前修改标志位
+        SysClipboardListener.fromSocket=true;
         // 将文本添加到剪切板
         clipboard.setContents(stringSelection, null);
 
-    }
 
-    @Override
-    public void send(DataOutputStream dos, byte[] data) throws IOException {
-        dos.writeChar('T');
-        dos.writeInt(data.length);
-        dos.write(data);
     }
 }

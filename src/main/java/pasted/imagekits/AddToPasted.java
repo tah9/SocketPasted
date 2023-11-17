@@ -1,4 +1,4 @@
-package pasted.test;
+package pasted.imagekits;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
@@ -27,25 +27,5 @@ public class AddToPasted implements Transferable {
         return DataFlavor.imageFlavor.equals(flavor);
     }
 
-    public static void main(String[] args) {
 
-
-
-//        try {
-//            // 从文件中读取图片
-//            BufferedImage image = ImageIO.read(new File("D:\\\\Download\\\\test.png"));
-//
-//            // 创建ImageSelection对象
-//            AddToPasted imgSel = new AddToPasted(image);
-//
-//            // 获取系统剪切板
-//            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-//
-//            // 将图片添加到剪切板
-//            clipboard.setContents(imgSel, null);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-    }
 }

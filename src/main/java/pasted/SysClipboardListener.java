@@ -1,13 +1,13 @@
 package pasted;
 
-import javax.imageio.ImageIO;
+import pasted.imagekits.PastedImageConduct;
+
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 接收别人的复制写入剪切板，不会触发消息上传，防止陷入死循环。
 
  */
-public class ClipboardListener implements ClipboardOwner {
+public class SysClipboardListener implements ClipboardOwner {
 
     public interface PastedListener {
         void textPasted(String text);
@@ -30,7 +30,7 @@ public class ClipboardListener implements ClipboardOwner {
 
     public static boolean fromSocket = false;
 
-    public ClipboardListener(PastedListener pastedListener) {
+    public SysClipboardListener(PastedListener pastedListener) {
         // 将剪切板的所有者设置为自己
         // 当所有者为自己时，才能监控下一次剪切板的变动
         // clipboard.getContents(null) 获取当前剪切板的内容
@@ -58,61 +58,46 @@ public class ClipboardListener implements ClipboardOwner {
         long startTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTime < 3000) {
             try {
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.MILLISECONDS.sleep(200);
             } catch (InterruptedException e) {
                 // e.printStackTrace();
             }
-            if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
-                try {
-                    // 获取文本数据
-                    String text = (String) clipboard.getData(DataFlavor.stringFlavor);
-                    pastedListener.textPasted(text);
-                } catch (Exception e) {
-                    // e.printStackTrace();
-                    continue;
-                }
-            } else if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
-
-
-                BufferedImage image = null;
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    // 获取图片数据
-                    image = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
-
+            try {
+                //isDataFlavorAvailable读取时若剪切板被系统占用会抛出IllegalStateException异常
+                if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
                     try {
-                        clipboard.setContents(clipboard.getContents(null), null);
+                        // 获取文本数据
+                        String text = (String) clipboard.getData(DataFlavor.stringFlavor);
+                        System.out.println(text);
+                        pastedListener.textPasted(text);
+                        break;
                     } catch (Exception e) {
-//            throw new RuntimeException(e);
                     }
-                    // 创建一个新的RGB图像
-                    BufferedImage rgbImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
-
-                    // 将原始图像的内容绘制到新的图像中
-                    rgbImage.getGraphics().drawImage(image, 0, 0, null);
-
-                    // 将图像转换为字节数组
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(rgbImage, "jpg", baos);
-                    byte[] bytes = baos.toByteArray();
-
-                    pastedListener.imagePasted(bytes);
-                    System.out.println(System.currentTimeMillis());
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    // e.printStackTrace();
-                    continue;
                 }
+                if (clipboard.isDataFlavorAvailable(DataFlavor.imageFlavor)) {
+                    BufferedImage image = null;
+                    try {
+                        // 获取图片数据
+                        image = (BufferedImage) clipboard.getData(DataFlavor.imageFlavor);
+
+//                    try {
+//                        clipboard.setContents(clipboard.getContents(null), null);
+//                    } catch (Exception e) {
+////            throw new RuntimeException(e);
+//                    }
+
+                        byte[] bytes = PastedImageConduct.conductImage(image).toByteArray();
+                        pastedListener.imagePasted(bytes);
+                        break;
+
+                    } catch (Exception e) {
+                    }
+                }
+
+            } catch (IllegalStateException e) {
 
             }
-
-            break;
         }
-        System.out.println(System.currentTimeMillis());
 
         // 不影响剪切板内容
         // 每次剪切板变动，剪切板的所有者会被剥夺，所以要重新设置自己为所有者，才能监听下一次剪切板变动

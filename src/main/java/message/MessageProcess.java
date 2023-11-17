@@ -1,12 +1,15 @@
 package message;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
+import socket.DataSocket;
 
-public interface MessageProcess {
 
-    void send(DataOutputStream dos, byte[] data) throws IOException;
 
-    void receive(byte[] data);
+public interface MessageProcess<T> {
+
+    void send(DataSocket dso, T data) ;
+
+    void receive(DataSocket dso);
+
+    T getData(DataSocket dso);
 
 }

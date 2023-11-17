@@ -1,21 +1,20 @@
 package ui;
 
 import event.EventFrame;
-import message.*;
-import pasted.ClipboardListener;
+import message.MessageProcessFactory;
+import pasted.SysClipboardListener;
+import socket.DataSocket;
 import socket.SocketClient;
 import socket.SocketServer;
+import ui.event.PastedEvent;
+import ui.event.UiWindowsEvent;
+import ui.kit.PlatformKits;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
 
 public class SimpleUi {
     private JFrame frame;
@@ -23,11 +22,16 @@ public class SimpleUi {
     private JTable table;
     private DefaultTableModel tableModel;
     private String socketId;
-    private Socket socket;
+    private DataSocket dataSocket;
+    static String inputHost = null;
 
     public static void main(String[] args) {
         SimpleUi mainGUI = new SimpleUi();
         mainGUI.frame.setVisible(true);
+
+        if (args.length > 1) {
+            inputHost = args[0];
+        }
     }
 
     public SimpleUi() {
@@ -53,7 +57,7 @@ public class SimpleUi {
         lblNewLabel.setBounds(10, 10, 120, 15);
         frame.getContentPane().add(lblNewLabel);
 
-        textField = new JTextField("192.168.137.40:30000");
+        textField = new JTextField(inputHost == null ? "192.168.137.1:30000" : inputHost);
         textField.setBounds(10, 35, 160, 21);
         frame.getContentPane().add(textField);
         textField.setColumns(10);
@@ -100,43 +104,13 @@ public class SimpleUi {
                     }
                 }
                 btnNewButton.setText("已连接");
+                //设置剪切板监听
+                new SysClipboardListener(new PastedEvent(dataSocket));
+
                 frame.setTitle("剪切板共享已开启");
+                textField.setText(host + ":" + port);
                 mainBtn.setVisible(true);
                 subBtn.setVisible(true);
-                ClipboardListener clipboardListener = new ClipboardListener(new ClipboardListener.PastedListener() {
-                    @Override
-                    public void textPasted(String text) {
-                        try {
-                            System.out.println(text);
-                            OutputStream outputStream = socket.getOutputStream();
-                            DataOutputStream dos = new DataOutputStream(outputStream);
-
-                            TextMessageProcess textMessageProcess = (TextMessageProcess) processFactory.getProcess('T');
-
-                            byte[] bytes = text.getBytes();
-                            textMessageProcess.send(dos, bytes);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-
-                    @Override
-                    public void imagePasted(byte[] data) {
-                        ByteArrayOutputStream out = null;
-                        ImageMessageProcess imageMessageProcess = null;
-                        DataOutputStream dos = null;
-                        try {
-                            OutputStream outputStream = socket.getOutputStream();
-                            dos = new DataOutputStream(outputStream);
-
-                            imageMessageProcess = (ImageMessageProcess) processFactory.getProcess('I');
-
-                            imageMessageProcess.send(dos, data);
-                        } catch (IOException ex) {
-//
-                        }
-                    }
-                });
 
             }
         });
@@ -148,50 +122,14 @@ public class SimpleUi {
                 frame.setVisible(false);
                 SocketServer.controlMachine = socketId;
                 // 创建一个指定分辨率的窗口
-                EventFrame frame = new EventFrame(new EventFrame.AllListener() {
-                    @Override
-                    public void keyPressed(int keyCode) {
-                        try {
-                            OutputStream outputStream = socket.getOutputStream();
-                            DataOutputStream dos = new DataOutputStream(outputStream);
-
-                            KeyMessageProcess keyMessageProcess = (KeyMessageProcess) processFactory.getProcess('K');
-
-                            byte[] bytes = TransFormB2I.intToBytes(keyCode);
-                            int keyCode2 = TransFormB2I.bytesToInt(bytes, 0);
-                            keyMessageProcess.send(dos, bytes);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                    }
-
-                    @Override
-                    public void mouseMove(int x, int y) {
-                        try {
-                            OutputStream outputStream = socket.getOutputStream();
-                            DataOutputStream dos = new DataOutputStream(outputStream);
-
-                            MouseMessageProcess mouseMessageProcess = (MouseMessageProcess) processFactory.getProcess('M');
-
-                            byte[] bytes = (x + "," + y).getBytes();
-                            mouseMessageProcess.send(dos, bytes);
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-
-                    @Override
-                    public void mouseLeftClick() {
-
-                    }
-                });
+                // todo 鼠标的移动不用xy偏移量了，直接创建和目标宽高比差不多的窗口，可以缩放，传递本机xy过去就好
+                EventFrame frame = new EventFrame(new UiWindowsEvent(dataSocket));
                 frame.setSize(width, height);
+                frame.setTitle("远控窗口");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 frame.setUndecorated(true);
                 frame.setVisible(true);
-
 
             }
         });
@@ -214,6 +152,6 @@ public class SimpleUi {
     MessageProcessFactory processFactory = new MessageProcessFactory();
 
     private void connectServer(String host, int port, SocketClient client) throws Exception {
-        socket = client.connect(host, port);
+        dataSocket = client.connect(host, port);
     }
 }

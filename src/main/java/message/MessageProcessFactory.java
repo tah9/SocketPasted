@@ -1,22 +1,33 @@
 package message;
 
+import message.tap.KeyPress;
+import message.tap.KeyRelease;
+import message.tap.MousePress;
+import message.tap.MouseRelease;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class MessageProcessFactory {
-    private Map<Character, MessageProcess> process = new HashMap<>();
+
+    private final Map<Character, MessageProcess<?>> process = new HashMap<>();
 
     public MessageProcessFactory() {
-        process.put('T', new TextMessageProcess());
-        process.put('I', new ImageMessageProcess());
-        process.put('C', new ConnectMessageProcess());
-        process.put('S', new SelectedMessageProcess());
-        process.put('K', new KeyMessageProcess());
-        process.put('M', new MouseMessageProcess());
-        // 添加更多的handler
+        process.put(DescribeHeader.Pasted_Text, new TextMessageProcess());
+        process.put(DescribeHeader.Pasted_Image, new ImageMessageProcess());
+
+
+        process.put(DescribeHeader.Mouse_Move, new MouseMoveMessageProcess());
+
+
+        process.put(DescribeHeader.Key_Press, new KeyPress());
+        process.put(DescribeHeader.Key_Release, new KeyRelease());
+        process.put(DescribeHeader.Mouse_Press, new MousePress());
+        process.put(DescribeHeader.Mouse_Release, new MouseRelease());
     }
 
-    public MessageProcess getProcess(char type) {
+
+    public MessageProcess<?> getProcess(char type) {
         return process.get(type);
     }
 }

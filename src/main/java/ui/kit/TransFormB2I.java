@@ -1,4 +1,4 @@
-package ui;
+package ui.kit;
 
 public class TransFormB2I {
     /**

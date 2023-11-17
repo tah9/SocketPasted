@@ -2,32 +2,27 @@ package socket;
 
 import message.MessageProcess;
 
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.net.Socket;
 
 public class SocketClient {
 
-    public Socket getSocket() {
-        return this.socket;
-    }
 
     public void setListener(MachinesOnlineChanged changed) {
         this.machinesOnlineChangedListener = changed;
     }
 
     public MachinesOnlineChanged machinesOnlineChangedListener;
-    private Socket socket;
+    public DataSocket dataSocket;
 
-    public Socket connect(String ip, int port) throws Exception {
+    public DataSocket connect(String ip, int port) throws Exception {
 
 //        machineName = new InputStreamReader(System.in).toString();
         Socket s = new Socket(ip, port);
-        s.setSoTimeout(10*1000);
-        new Thread(new ClientThread(s, this)).start();
-        this.socket = s;
-        return s;
+//        s.setSoTimeout(0);
+        this.dataSocket = new DataSocket(s);
 
+        new Thread(new ClientThread(dataSocket)).start();
+        return dataSocket;
 
     }
 
@@ -38,29 +33,20 @@ public class SocketClient {
 }
 
 class ClientThread implements Runnable {
-    private Socket s;
-    DataInputStream dis;
-    SocketClient parent;
+    DataSocket dataSocket;
 
-    public ClientThread(Socket s, SocketClient parent) throws IOException {
-        this.parent = parent;
-        this.s = s;
-        dis = new DataInputStream(s.getInputStream());
+    public ClientThread(DataSocket dataSocket) {
+        this.dataSocket = dataSocket;
     }
 
     public void run() {
         //客户端持续接收消息
+        //noinspection InfiniteLoopStatement
         while (true) {
-            try {
-                //这个方法会阻塞
-                char type = dis.readChar();
-
-                MessageProcess process = SocketServer.messageProcessFactory.getProcess(type);
-
-                int length = this.dis.readInt();
-                byte[] data = new byte[length];
-                this.dis.readFully(data);
-                process.receive(data);
+            //这个方法会阻塞
+            char type = dataSocket.readChar();
+            MessageProcess<?> process = SocketServer.messageProcessFactory.getProcess(type);
+            process.receive(dataSocket);
 
 //                if (type == 'C') {
 //                    ClientMachine machine = ((ConnectMessageProcess) process).getMachine();
@@ -68,8 +54,7 @@ class ClientThread implements Runnable {
 //                    parent.machinesOnlineChangedListener.addMachine(machine);
 //                }
 
-            } catch (IOException e) {
-            }
+
         }
     }
 }
