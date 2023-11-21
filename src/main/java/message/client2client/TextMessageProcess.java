@@ -1,4 +1,4 @@
-package message;
+package message.client2client;
 
 import pasted.SysClipboardListener;
 import socket.DataSocket;
@@ -9,6 +9,9 @@ import java.awt.datatransfer.StringSelection;
 
 public class TextMessageProcess implements MessageProcess<String> {
 
+    /*
+    该方法用于服务器转发时提取数据
+     */
     public String getData(DataSocket dso) {
         return dso.readUTF();
     }
@@ -21,9 +24,9 @@ public class TextMessageProcess implements MessageProcess<String> {
     }
 
     @Override
-    public void receive(DataSocket dis) {
+    public void process(DataSocket dso) {
 
-        String text = dis.readUTF();
+        String text = dso.readUTF();
         System.out.println("接收到的" + text);
         // 创建一个StringSelection对象来保存文本
         StringSelection stringSelection = new StringSelection(text);

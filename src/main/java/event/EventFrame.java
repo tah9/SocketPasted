@@ -4,10 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import static ui.kit.PlatformKits.mouseMoveToCenter;
 
 public class EventFrame extends JFrame {
-    public interface AllListener {
+    public interface AllEventListener {
         void keyPressed(int keyCode);
 
         void keyReleased(int keyCode);
@@ -20,13 +19,11 @@ public class EventFrame extends JFrame {
 
     }
 
-    private AllListener alllistener;
-    public int lastX;
-    public int lastY;
+    private AllEventListener alllistener;
     public int width;
     public int height;
 
-    public EventFrame(AllListener listener) {
+    public EventFrame(AllEventListener listener) {
 
         // 获取默认工具包
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -35,9 +32,6 @@ public class EventFrame extends JFrame {
         Dimension screenSize = toolkit.getScreenSize();
         this.width = screenSize.width;
         this.height = screenSize.height;
-        mouseMoveToCenter();
-        this.lastX = this.width / 2;
-        this.lastY = this.height / 2;
 
         this.alllistener = listener;
         // 添加鼠标监听器
@@ -76,11 +70,10 @@ public class EventFrame extends JFrame {
                     alllistener.MouseReleased(InputEvent.BUTTON1_DOWN_MASK);
                 }else if (e.getButton()==2){
                     alllistener.MouseReleased(InputEvent.BUTTON2_DOWN_MASK);
-
                 }else if (e.getButton()==3){
                     alllistener.MouseReleased(InputEvent.BUTTON3_DOWN_MASK);
-
                 }
+                System.out.println(e.getButton());
             }
         });
 
@@ -96,9 +89,7 @@ public class EventFrame extends JFrame {
 //                }
 
 
-                alllistener.mouseMove(e.getX() - lastX, e.getY() - lastY);
-                lastX = e.getX();
-                lastY = e.getY();
+                alllistener.mouseMove(e.getX(), e.getY());
 
             }
         });
@@ -130,15 +121,13 @@ public class EventFrame extends JFrame {
             }
         });
 
-        this.addWindowStateListener(e -> {
-            if (e.getNewState() == Frame.NORMAL) {
-
-                System.out.println("窗口从最小化状态恢复到正常大小，重置鼠标");
-                lastX = width / 2;
-                lastY = height / 2;
-                mouseMoveToCenter();
-            }
-        });
+//        this.addWindowStateListener(e -> {
+//            if (e.getNewState() == Frame.NORMAL) {
+//                System.out.println("窗口从最小化状态恢复到正常大小，重置鼠标");
+//                lastX = width / 2;
+//                lastY = height / 2;
+//            }
+//        });
     }
 
 

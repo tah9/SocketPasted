@@ -28,20 +28,5 @@ public class PlatformKits {
     }
 
 
-    public static void mouseMoveToCenter() {
-        // 将鼠标移动至屏幕中间
-        try {
-            Robot robot = new Robot();
-            // 获取默认工具包
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-            // 获取屏幕分辨率
-            Dimension screenSize = toolkit.getScreenSize();
-            int width = screenSize.width;
-            int height = screenSize.height;
-            robot.mouseMove(width / 2, height / 2);
-        } catch (AWTException ee) {
-            ee.printStackTrace();
-        }
-    }
 }

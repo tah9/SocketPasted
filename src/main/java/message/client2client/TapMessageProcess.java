@@ -1,4 +1,4 @@
-package message;
+package message.client2client;
 
 import socket.DataSocket;
 
@@ -23,8 +23,8 @@ public abstract class TapMessageProcess implements MessageProcess<Integer> {
     }
 
     @Override
-    public void receive(DataSocket dis) {
-        int keyCode = dis.readInt();
+    public void process(DataSocket dso) {
+        int keyCode = dso.readInt();
         performAction(keyCode);
     }
 

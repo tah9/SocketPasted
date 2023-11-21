@@ -1,4 +1,4 @@
-package message;
+package message.client2client;
 
 
 import pasted.SysClipboardListener;
@@ -20,10 +20,10 @@ public class ImageMessageProcess implements MessageProcess<byte[]>{
         targetDso.flush();
     }
 
-    public void receive(DataSocket dis) {
+    public void process(DataSocket dso) {
         try {
-            byte[]data=new byte[dis.readInt()];
-            dis.readFully(data);
+            byte[]data=new byte[dso.readInt()];
+            dso.readFully(data);
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
             // 创建ImageSelection对象
             AddToPasted imgSel = new AddToPasted(image);

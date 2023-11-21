@@ -1,41 +1,50 @@
 package socket;
 
-import message.MessageProcess;
+import message.client2client.DescribeHeader;
+import message.client2client.MessageProcess;
+import message.client2client.MessageProcessFactory;
+import message.client2server.ConnectMessageProcess;
+import ui.kit.Object2bytes;
+import ui.kit.PlatformKits;
 
 import java.net.Socket;
 
 public class SocketClient {
 
 
-    public void setListener(MachinesOnlineChanged changed) {
-        this.machinesOnlineChangedListener = changed;
-    }
-
-    public MachinesOnlineChanged machinesOnlineChangedListener;
     public DataSocket dataSocket;
 
-    public DataSocket connect(String ip, int port) throws Exception {
+    public DataSocket connect(String ip, int port, MessageProcessFactory factory,MachinesOnlineChanged changed) throws Exception {
 
-//        machineName = new InputStreamReader(System.in).toString();
+
         Socket s = new Socket(ip, port);
-//        s.setSoTimeout(0);
         this.dataSocket = new DataSocket(s);
 
-        new Thread(new ClientThread(dataSocket)).start();
+        /*
+        连接成功后发送设备信息
+         */
+        ClientMachine machine = PlatformKits.createMachine(dataSocket.getId());
+        ConnectMessageProcess connectMessageProcess = new ConnectMessageProcess(changed);
+        factory.put(DescribeHeader.Connect_Client,connectMessageProcess);
+
+        connectMessageProcess.send(dataSocket, Object2bytes.object2bytes(machine));
+
+
+        new Thread(new ClientThread(dataSocket, factory)).start();
         return dataSocket;
 
     }
 
-    public void setMachinesOnlineChangedListener(MachinesOnlineChanged machinesOnlineChangedListener) {
-        this.machinesOnlineChangedListener = machinesOnlineChangedListener;
-    }
 
 }
 
 class ClientThread implements Runnable {
     DataSocket dataSocket;
+    MessageProcessFactory messageProcessFactory;
 
-    public ClientThread(DataSocket dataSocket) {
+
+    public ClientThread(DataSocket dataSocket, MessageProcessFactory factory) {
+        messageProcessFactory = factory;
         this.dataSocket = dataSocket;
     }
 
@@ -45,16 +54,8 @@ class ClientThread implements Runnable {
         while (true) {
             //这个方法会阻塞
             char type = dataSocket.readChar();
-            MessageProcess<?> process = SocketServer.messageProcessFactory.getProcess(type);
-            process.receive(dataSocket);
-
-//                if (type == 'C') {
-//                    ClientMachine machine = ((ConnectMessageProcess) process).getMachine();
-//                    SocketServer.machineList.add(machine);
-//                    parent.machinesOnlineChangedListener.addMachine(machine);
-//                }
-
-
+            MessageProcess<?> process = messageProcessFactory.getProcess(type);
+            process.process(dataSocket);
         }
     }
 }

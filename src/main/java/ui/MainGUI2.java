@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class MainGUI {
+public class MainGUI2 {
     private JFrame frame;
     private JTextField textField;
     private JTable table;
@@ -26,11 +26,11 @@ public class MainGUI {
     private SocketClient client;
 
     public static void main(String[] args) {
-        MainGUI mainGUI = new MainGUI();
+        MainGUI2 mainGUI = new MainGUI2();
         mainGUI.frame.setVisible(true);
     }
 
-    public MainGUI() {
+    public MainGUI2() {
         initialize();
     }
 
@@ -50,7 +50,7 @@ public class MainGUI {
 
             @Override
             public void updateMachine(List<ClientMachine> list) {
-                MainGUI.this.updateMachine(list);
+                MainGUI2.this.updateMachine(list);
             }
         });
     }
@@ -147,10 +147,10 @@ public class MainGUI {
                 StringBuilder controlList = new StringBuilder();
                 // 遍历表格的所有行
                 for (int i = 0; i < table.getRowCount(); i++) {
-                    if (table.getValueAt(i, 3) != null && (Boolean) table.getValueAt(i, 3)) {
+                    if ((Boolean) table.getValueAt(i, 3)) {
                         ClientMachine machine = machineList.get(i);
 //                        targetList.add(machine);
-                        controlList.append(machine.getMachineName()).append(",");
+                        controlList.append(machine.getSocketId() + ",");
                     }
                 }
                 //
@@ -160,7 +160,6 @@ public class MainGUI {
                 //删除最后的分隔符号
                 controlList.deleteCharAt(controlList.length() - 1);
 
-                System.out.println(controlList);
                 SelectedMessageProcess selectedMessageProcess = new SelectedMessageProcess();
                 selectedMessageProcess.send(dataSocket, controlList.toString());
 
@@ -175,12 +174,11 @@ public class MainGUI {
                 // todo 鼠标的移动不用xy偏移量了，直接创建和目标宽高比差不多的窗口，可以缩放，传递本机xy过去就好
                 EventFrame frame = new EventFrame(new UiWindowsEvent(dataSocket));
                 ClientMachine machine = machineList.get(machineList.size() - 1);
-                System.out.println(machine);
                 frame.setSize(machine.getScreenWidth(), machine.getScreenHeight());
                 frame.setTitle("远控窗口");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//                frame.setUndecorated(true);
+                frame.setUndecorated(true);
                 frame.setVisible(true);
                 //设置剪切板监听
                 new SysClipboardListener(new PastedEvent(dataSocket));
@@ -192,21 +190,21 @@ public class MainGUI {
     ;
 
 
+
     private List<ClientMachine> machineList;
 
     private void updateMachine(List<ClientMachine> list) {
-        this.machineList = list;
+        machineList = list;
 
-        tableModel.setRowCount(0);
-
-
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            tableModel.removeRow(i);
+        }
         for (ClientMachine machine : list) {
             if (machine.getSocketId().equals(dataSocket.getId()))
                 tableModel.addRow(new Object[]{machine.getOs(), machine.getMachineName(), machine.getSocketId(), null});
             else
                 tableModel.addRow(new Object[]{machine.getOs(), machine.getMachineName(), machine.getSocketId(), false});
         }
-
     }
 
 

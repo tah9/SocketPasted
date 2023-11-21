@@ -1,73 +1,57 @@
-    package socket;
+package socket;
 
-    import message.MessageProcess;
-    import message.MessageProcessFactory;
-
-    import java.io.IOException;
-    import java.net.ServerSocket;
-    import java.net.Socket;
-    import java.util.ArrayList;
-    import java.util.List;
-
-    public class SocketServer {
-        public static List<DataSocket> socketList = new ArrayList<>();
-        public static List<ClientMachine> machineList = new ArrayList<>();
-        public static MessageProcessFactory messageProcessFactory = new MessageProcessFactory();
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
-        public static String controlMachine;
+public class SocketServer {
+    public static List<DataSocket> socketList = new ArrayList<>();
 
-        public void startServer() {
-            try {
-                ServerSocket ss = new ServerSocket(30000);
+    public static List<ClientMachine> machineList = new ArrayList<>();
 
-                System.out.println("服务器已启动");
-                while (true) {
-                    Socket s = ss.accept();
-                    DataSocket dataSocket = new DataSocket(s);
-                    socketList.add(dataSocket);
-                    System.out.println("新设备登录");
-                    new Thread(new ServerThread(dataSocket)).start();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-
-
-    }
+    //    public static int controlDimensions;
+    public static Lock listLock = new ReentrantLock();
 
     /*
-    服务端socket，整个系统的数据收发中转站
+    用于保存每个客户端映射的线程
      */
-    class ServerThread implements Runnable {
-        private DataSocket dataSocket;
-    //    private Socket s;
+    public static HashMap<String, ClientTransferThread> clientThreadMap = new HashMap<>();
+    private ServerSocket ss;
+    private int port = 30000;
 
-        public ServerThread(DataSocket dataSocket) throws IOException {
-    //        this.s = s;
-            this.dataSocket = dataSocket;
-        }
+    public void startServer() {
+        try {
+            ss = new ServerSocket(port);
 
-        public void run() {
+            System.out.println("服务器已启动");
+
+            /*
+            客户端消息中转
+             */
             while (true) {
-                //这个方法会阻塞
-                char type = dataSocket.readChar();
-                MessageProcess<?> process = SocketServer.messageProcessFactory.getProcess(type);
-                for (DataSocket targetDso : SocketServer.socketList) {
-                    //将消息发送给除发送方之外的所有客户端，无论如何不能给自己发送
-                    if (this.dataSocket != targetDso) {
-                        try {
-                            ((MessageProcess<Object>)process).send(targetDso, process.getData(dataSocket));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            //发送失败，socket不在线，移除列表
-                            SocketServer.socketList.remove(targetDso);
-                        }
-                    }
-                }
+                /*
+                每个客户端连接服务端后发送客户端具体信息，
+                此处接收客户端设备消息
+                 */
+                Socket s = ss.accept();
+                DataSocket onlineSocket = new DataSocket(s);
+
+                new Thread(new ClientTransferThread(onlineSocket)).start();
+
 
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
     }
+
+}
+
+

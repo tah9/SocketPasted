@@ -1,16 +1,16 @@
 package ui.event;
 
 import event.EventFrame;
-import message.DescribeHeader;
-import message.MessageProcessFactory;
-import message.MouseMoveMessageProcess;
-import message.tap.KeyPress;
-import message.tap.KeyRelease;
-import message.tap.MousePress;
-import message.tap.MouseRelease;
+import message.client2client.DescribeHeader;
+import message.client2client.MessageProcessFactory;
+import message.client2client.MouseMoveMessageProcess;
+import message.client2client.tap.KeyPress;
+import message.client2client.tap.KeyRelease;
+import message.client2client.tap.MousePress;
+import message.client2client.tap.MouseRelease;
 import socket.DataSocket;
 
-public class UiWindowsEvent implements EventFrame.AllListener {
+public class UiWindowsEvent implements EventFrame.AllEventListener {
 
     DataSocket dataSocket;
     private final KeyPress keyPress;

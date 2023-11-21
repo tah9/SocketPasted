@@ -1,4 +1,4 @@
-package message;
+package message.client2client;
 
 
 import socket.DataSocket;
@@ -28,9 +28,9 @@ public class MouseMoveMessageProcess implements MessageProcess<Integer> {
 
 
     @Override
-    public void receive(DataSocket dis) {
+    public void process(DataSocket dso) {
 
-        int lParam = dis.readInt(); // 接收这个int值
+        int lParam = dso.readInt(); // 接收这个int值
         int x = lParam & 0xFFFF; // 从这个int值中解码出x坐标
         int y = lParam >> 16; // 从这个int值中解码出y坐标
 

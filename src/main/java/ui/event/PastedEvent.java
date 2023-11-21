@@ -1,9 +1,9 @@
 package ui.event;
 
-import message.DescribeHeader;
-import message.ImageMessageProcess;
-import message.MessageProcessFactory;
-import message.TextMessageProcess;
+import message.client2client.DescribeHeader;
+import message.client2client.ImageMessageProcess;
+import message.client2client.MessageProcessFactory;
+import message.client2client.TextMessageProcess;
 import pasted.SysClipboardListener;
 import socket.DataSocket;
 
