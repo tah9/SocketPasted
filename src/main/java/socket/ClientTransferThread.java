@@ -1,9 +1,9 @@
 package socket;
 
-import message.client2client.BeginMessage;
-import message.client2client.DescribeHeader;
-import message.client2client.MessageProcess;
-import message.client2client.MessageProcessFactory;
+import message.toclient.BeginMessage;
+import message.DescribeHeader;
+import message.toclient.MessageProcess;
+import message.MessageProcessFactory;
 import message.client2server.ConnectMessageProcess;
 import message.client2server.SelectedMessageProcess;
 import ui.kit.Object2bytes;
@@ -133,7 +133,6 @@ public class ClientTransferThread implements Runnable {
                  */
             char type = onlineSocket.readChar();
             MessageProcess<?> messageProcess = messageProcessFactory.getProcess(type);
-            System.out.println("type > " + type);
 
             //data要在循环外取出，一条消息发给多目标不能多次read，第一次read完管道指针就移动到尾部了后续读不到
             Object data = messageProcess.transferGetData(onlineSocket);

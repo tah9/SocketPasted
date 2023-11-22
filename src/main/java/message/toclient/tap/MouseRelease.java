@@ -1,7 +1,7 @@
-package message.client2client.tap;
+package message.toclient.tap;
 
-import message.client2client.DescribeHeader;
-import message.client2client.TapMessageProcess;
+import message.DescribeHeader;
+import message.toclient.TapMessageProcess;
 
 public class MouseRelease extends TapMessageProcess {
     @Override

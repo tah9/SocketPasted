@@ -1,5 +1,6 @@
-package message.client2client;
+package message.toclient;
 
+import message.DescribeHeader;
 import pasted.SysClipboardListener;
 import socket.DataSocket;
 

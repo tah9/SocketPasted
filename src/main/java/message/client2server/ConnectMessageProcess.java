@@ -1,7 +1,7 @@
 package message.client2server;
 
-import message.client2client.DescribeHeader;
-import message.client2client.MessageProcess;
+import message.DescribeHeader;
+import message.toclient.MessageProcess;
 import socket.ClientMachine;
 import socket.DataSocket;
 import socket.MachinesOnlineChanged;

@@ -1,9 +1,10 @@
-package message.client2client;
+package message;
 
-import message.client2client.tap.KeyPress;
-import message.client2client.tap.KeyRelease;
-import message.client2client.tap.MousePress;
-import message.client2client.tap.MouseRelease;
+import message.toclient.*;
+import message.toclient.tap.KeyPress;
+import message.toclient.tap.KeyRelease;
+import message.toclient.tap.MousePress;
+import message.toclient.tap.MouseRelease;
 import message.client2server.ConnectMessageProcess;
 import message.client2server.SelectedMessageProcess;
 

@@ -1,4 +1,4 @@
-package message.client2client;
+package message.toclient;
 
 import socket.DataSocket;
 

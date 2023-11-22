@@ -1,7 +1,7 @@
 package ui;
 
-import event.EventFrame;
-import message.client2client.MessageProcessFactory;
+import event.EventPanel;
+import message.MessageProcessFactory;
 import message.client2server.SelectedMessageProcess;
 import pasted.SysClipboardListener;
 import socket.*;
@@ -173,14 +173,15 @@ public class MainGUI {
                 frame.setVisible(false);
                 // 创建一个指定分辨率的窗口
                 // todo 鼠标的移动不用xy偏移量了，直接创建和目标宽高比差不多的窗口，可以缩放，传递本机xy过去就好
-                EventFrame frame = new EventFrame(new UiWindowsEvent(dataSocket));
+                EventPanel eventPanel = new EventPanel(new UiWindowsEvent(dataSocket));
                 ClientMachine machine = machineList.get(machineList.size() - 1);
                 System.out.println(machine);
-                frame.setSize(machine.getScreenWidth(), machine.getScreenHeight());
-                frame.setTitle("远控窗口");
+                eventPanel.setPreferredSize(new Dimension(machine.getScreenWidth(), machine.getScreenHeight()));
+                JFrame frame = new JFrame("远控窗口");
+                frame.getContentPane().add(eventPanel);
+                frame.pack();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//                frame.setUndecorated(true);
+
                 frame.setVisible(true);
                 //设置剪切板监听
                 new SysClipboardListener(new PastedEvent(dataSocket));

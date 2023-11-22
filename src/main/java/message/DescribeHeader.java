@@ -1,4 +1,4 @@
-package message.client2client;
+package message;
 
 public class DescribeHeader {
     public static char Key_Press = 'K', Key_Release = 'R',

@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class EventFrame extends JFrame {
+public class EventPanel extends JPanel {
     public interface AllEventListener {
         void keyPressed(int keyCode);
 
@@ -23,7 +23,10 @@ public class EventFrame extends JFrame {
     public int width;
     public int height;
 
-    public EventFrame(AllEventListener listener) {
+
+
+
+    public EventPanel(AllEventListener listener) {
 
         // 获取默认工具包
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -38,42 +41,18 @@ public class EventFrame extends JFrame {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-//                System.out.println("Mouse clicked at position: (" + e.getX() + ", " + e.getY() + ")");
-//                System.out.println("Mouse button: " + e.getButton());
-//                if (e.getButton() == 1) {
-////                    alllistener.mouseLeftClick();
-//                    alllistener.keyPressed(InputEvent.BUTTON1_DOWN_MASK);
-//                } else if (e.getButton() == 3) {
-//                    alllistener.keyPressed(InputEvent.BUTTON3_DOWN_MASK);
-//                }
 
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                System.out.println("Mouse pressed");
-                if (e.getButton() == 1) {
-                    alllistener.MousePressed(InputEvent.BUTTON1_DOWN_MASK);
-                } else if (e.getButton() == 2) {
-                    alllistener.MousePressed(InputEvent.BUTTON2_DOWN_MASK);
-
-                } else if (e.getButton() == 3) {
-                    alllistener.MousePressed(InputEvent.BUTTON3_DOWN_MASK);
-
-                }
+                System.out.println(InputEvent.getMaskForButton(e.getButton()));
+                alllistener.MousePressed(1 << (9 + e.getButton()));
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                System.out.println("Mouse released");
-                if (e.getButton() == 1) {
-                    alllistener.MouseReleased(InputEvent.BUTTON1_DOWN_MASK);
-                } else if (e.getButton() == 2) {
-                    alllistener.MouseReleased(InputEvent.BUTTON2_DOWN_MASK);
-                } else if (e.getButton() == 3) {
-                    alllistener.MouseReleased(InputEvent.BUTTON3_DOWN_MASK);
-                }
-                System.out.println(e.getButton());
+                alllistener.MouseReleased(1 << (9 + e.getButton()));
             }
         });
 
@@ -96,6 +75,8 @@ public class EventFrame extends JFrame {
         });
 
         // 添加键盘监听器
+        this.setFocusable(true);
+        this.requestFocusInWindow();
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

@@ -1,8 +1,8 @@
 package socket;
 
-import message.client2client.DescribeHeader;
-import message.client2client.MessageProcess;
-import message.client2client.MessageProcessFactory;
+import message.DescribeHeader;
+import message.toclient.MessageProcess;
+import message.MessageProcessFactory;
 import message.client2server.ConnectMessageProcess;
 import ui.kit.Object2bytes;
 import ui.kit.PlatformKits;
