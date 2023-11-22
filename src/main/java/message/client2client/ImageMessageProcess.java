@@ -13,14 +13,14 @@ import java.io.ByteArrayInputStream;
 
 public class ImageMessageProcess implements MessageProcess<byte[]>{
     @Override
-    public void send(DataSocket targetDso, byte[] data)  {
+    public void sendToClient(DataSocket targetDso, byte[] data)  {
         targetDso.writeChar(DescribeHeader.Pasted_Image);
         targetDso.writeInt(data.length);
         targetDso.write(data);
         targetDso.flush();
     }
 
-    public void process(DataSocket dso) {
+    public void clientProcess(DataSocket dso) {
         try {
             byte[]data=new byte[dso.readInt()];
             dso.readFully(data);
@@ -40,7 +40,7 @@ public class ImageMessageProcess implements MessageProcess<byte[]>{
     }
 
     @Override
-    public byte[] getData(DataSocket dso) {
+    public byte[] transferGetData(DataSocket dso) {
         byte[] data = new byte[dso.readInt()];
         dso.readFully(data);
         return data;

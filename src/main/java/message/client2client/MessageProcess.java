@@ -8,10 +8,19 @@ import socket.DataSocket;
  */
 public interface MessageProcess<T> {
 
-    void send(DataSocket dso, T data) ;
+    /*
+    消息直接发送给客户端，不经过中转
+     */
+    void sendToClient(DataSocket dso, T data) ;
 
-    void process(DataSocket dso);
+    /*
+    客户端处理消息
+     */
+    void clientProcess(DataSocket dso);
 
-    T getData(DataSocket dso);
+    /*
+    中转站截获消息
+     */
+    T transferGetData(DataSocket dso);
 
 }

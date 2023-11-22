@@ -10,7 +10,7 @@ import socket.DataSocket;
 public class SelectedMessageProcess implements MessageProcess<String> {
 
     @Override
-    public void send(DataSocket dso, String data) {
+    public void sendToClient(DataSocket dso, String data) {
         dso.writeChar(DescribeHeader.Machine_Select);
         dso.writeUTF(data);
         dso.flush();
@@ -21,12 +21,12 @@ public class SelectedMessageProcess implements MessageProcess<String> {
     这条消息确定是被服务端接收处理的
      */
     @Override
-    public void process(DataSocket dso) {
+    public void clientProcess(DataSocket dso) {
 //        SocketServer.clientThreadMap.get()
     }
 
     @Override
-    public String getData(DataSocket dso) {
+    public String transferGetData(DataSocket dso) {
         return dso.readUTF();
     }
 }

@@ -16,20 +16,20 @@ public abstract class TapMessageProcess implements MessageProcess<Integer> {
     }
 
     @Override
-    public void send(DataSocket targetDso, Integer keyCode) {
+    public void sendToClient(DataSocket targetDso, Integer keyCode) {
         targetDso.writeChar(getType());
         targetDso.writeInt(keyCode);
         targetDso.flush();
     }
 
     @Override
-    public void process(DataSocket dso) {
+    public void clientProcess(DataSocket dso) {
         int keyCode = dso.readInt();
         performAction(keyCode);
     }
 
     @Override
-    public Integer getData(DataSocket dso) {
+    public Integer transferGetData(DataSocket dso) {
         return dso.readInt();
     }
 

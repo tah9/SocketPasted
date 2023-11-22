@@ -38,6 +38,7 @@ public class MessageProcessFactory {
     public MessageProcess<?> getProcess(char type) {
         MessageProcess<?> messageProcess = process.get(type);
         if (messageProcess == null) {
+            System.out.println(type);
             System.out.println("流截取出错");
         }
         return messageProcess;

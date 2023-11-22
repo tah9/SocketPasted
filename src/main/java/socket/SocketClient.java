@@ -14,7 +14,7 @@ public class SocketClient {
 
     public DataSocket dataSocket;
 
-    public DataSocket connect(String ip, int port, MessageProcessFactory factory,MachinesOnlineChanged changed) throws Exception {
+    public DataSocket connect(String ip, int port, MessageProcessFactory factory, MachinesOnlineChanged changed) throws Exception {
 
 
         Socket s = new Socket(ip, port);
@@ -25,9 +25,9 @@ public class SocketClient {
          */
         ClientMachine machine = PlatformKits.createMachine(dataSocket.getId());
         ConnectMessageProcess connectMessageProcess = new ConnectMessageProcess(changed);
-        factory.put(DescribeHeader.Connect_Client,connectMessageProcess);
+        factory.put(DescribeHeader.Connect_Client, connectMessageProcess);
 
-        connectMessageProcess.send(dataSocket, Object2bytes.object2bytes(machine));
+        connectMessageProcess.sendToClient(dataSocket, Object2bytes.object2bytes(machine));
 
 
         new Thread(new ClientThread(dataSocket, factory)).start();
@@ -55,7 +55,7 @@ class ClientThread implements Runnable {
             //这个方法会阻塞
             char type = dataSocket.readChar();
             MessageProcess<?> process = messageProcessFactory.getProcess(type);
-            process.process(dataSocket);
+            process.clientProcess(dataSocket);
         }
     }
 }

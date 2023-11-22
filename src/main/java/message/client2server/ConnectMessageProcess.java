@@ -20,7 +20,7 @@ import java.util.List;
 public class ConnectMessageProcess implements MessageProcess<byte[]> {
 
     @Override
-    public void send(DataSocket dso, byte[] bytes) {
+    public void sendToClient(DataSocket dso, byte[] bytes) {
         dso.writeChar(DescribeHeader.Connect_Client);
         dso.writeInt(bytes.length);
         dso.write(bytes);
@@ -42,7 +42,7 @@ public class ConnectMessageProcess implements MessageProcess<byte[]> {
     private MachinesOnlineChanged onlineChanged;
 
     @Override
-    public void process(DataSocket dso) {
+    public void clientProcess(DataSocket dso) {
         byte[] data = new byte[dso.readInt()];
         dso.readFully(data);
         try {
@@ -65,7 +65,7 @@ public class ConnectMessageProcess implements MessageProcess<byte[]> {
     }
 
     @Override
-    public byte[] getData(DataSocket dso) {
+    public byte[] transferGetData(DataSocket dso) {
         byte[] data = new byte[dso.readInt()];
         dso.readFully(data);
         return data;

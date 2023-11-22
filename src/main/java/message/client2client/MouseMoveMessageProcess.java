@@ -20,7 +20,7 @@ public class MouseMoveMessageProcess implements MessageProcess<Integer> {
     }
 
     @Override
-    public void send(DataSocket targetDso, Integer encodeKeyCode) {
+    public void sendToClient(DataSocket targetDso, Integer encodeKeyCode) {
         targetDso.writeChar(DescribeHeader.Mouse_Move);
         targetDso.writeInt(encodeKeyCode);
         targetDso.flush();
@@ -28,26 +28,21 @@ public class MouseMoveMessageProcess implements MessageProcess<Integer> {
 
 
     @Override
-    public void process(DataSocket dso) {
+    public void clientProcess(DataSocket dso) {
 
         int lParam = dso.readInt(); // 接收这个int值
         int x = lParam & 0xFFFF; // 从这个int值中解码出x坐标
         int y = lParam >> 16; // 从这个int值中解码出y坐标
 
-        // 获取当前鼠标的位置
-        Point currentMousePosition = MouseInfo.getPointerInfo().getLocation();
 
-        // 计算新的鼠标位置
-        int newX = currentMousePosition.x + x;
-        int newY = currentMousePosition.y + y;
-
+        System.out.println(x + "," + y);
         // 移动鼠标到新的位置
-        robot.mouseMove(newX, newY);
+        robot.mouseMove(x, y);
 
     }
 
     @Override
-    public Integer getData(DataSocket dso) {
+    public Integer transferGetData(DataSocket dso) {
         return dso.readInt();
     }
 }

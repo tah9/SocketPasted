@@ -21,13 +21,13 @@ public class PastedEvent implements SysClipboardListener.PastedListener {
 
     @Override
     public void textPasted(String text) {
-        textMessageProcess.send(dataSocket, text);
+        textMessageProcess.sendToClient(dataSocket, text);
 
     }
 
     @Override
     public void imagePasted(byte[] data) {
-        imageMessageProcess.send(dataSocket, data);
+        imageMessageProcess.sendToClient(dataSocket, data);
 
     }
 }

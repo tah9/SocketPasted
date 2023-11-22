@@ -12,19 +12,19 @@ public class TextMessageProcess implements MessageProcess<String> {
     /*
     该方法用于服务器转发时提取数据
      */
-    public String getData(DataSocket dso) {
+    public String transferGetData(DataSocket dso) {
         return dso.readUTF();
     }
 
     @Override
-    public void send(DataSocket targetDso, String text) {
+    public void sendToClient(DataSocket targetDso, String text) {
         targetDso.writeChar(DescribeHeader.Pasted_Text);
         targetDso.writeUTF(text);
         targetDso.flush();
     }
 
     @Override
-    public void process(DataSocket dso) {
+    public void clientProcess(DataSocket dso) {
 
         String text = dso.readUTF();
         System.out.println("接收到的" + text);

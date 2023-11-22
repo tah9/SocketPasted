@@ -161,7 +161,7 @@ public class MainGUI2 {
                 controlList.deleteCharAt(controlList.length() - 1);
 
                 SelectedMessageProcess selectedMessageProcess = new SelectedMessageProcess();
-                selectedMessageProcess.send(dataSocket, controlList.toString());
+                selectedMessageProcess.sendToClient(dataSocket, controlList.toString());
 
                 try {
                     Thread.sleep(1000);

@@ -52,12 +52,12 @@ public class EventFrame extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 System.out.println("Mouse pressed");
-                if (e.getButton()==1){
+                if (e.getButton() == 1) {
                     alllistener.MousePressed(InputEvent.BUTTON1_DOWN_MASK);
-                }else if (e.getButton()==2){
+                } else if (e.getButton() == 2) {
                     alllistener.MousePressed(InputEvent.BUTTON2_DOWN_MASK);
 
-                }else if (e.getButton()==3){
+                } else if (e.getButton() == 3) {
                     alllistener.MousePressed(InputEvent.BUTTON3_DOWN_MASK);
 
                 }
@@ -66,11 +66,11 @@ public class EventFrame extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 System.out.println("Mouse released");
-                if (e.getButton()==1){
+                if (e.getButton() == 1) {
                     alllistener.MouseReleased(InputEvent.BUTTON1_DOWN_MASK);
-                }else if (e.getButton()==2){
+                } else if (e.getButton() == 2) {
                     alllistener.MouseReleased(InputEvent.BUTTON2_DOWN_MASK);
-                }else if (e.getButton()==3){
+                } else if (e.getButton() == 3) {
                     alllistener.MouseReleased(InputEvent.BUTTON3_DOWN_MASK);
                 }
                 System.out.println(e.getButton());
@@ -81,13 +81,6 @@ public class EventFrame extends JFrame {
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-//                System.out.println("Mouse moved" + e.getX() + "." + e.getY());
-//                if (e.getX()>width-100||e.getY()>height-100||e.getY()<100||e.getX()<100){
-//                    mouseMoveToCenter();
-//                    lastX=e.getX();
-//                    lastY=e.getY();
-//                }
-
 
                 alllistener.mouseMove(e.getX(), e.getY());
 
@@ -120,14 +113,6 @@ public class EventFrame extends JFrame {
                 alllistener.keyReleased(e.getKeyCode());
             }
         });
-
-//        this.addWindowStateListener(e -> {
-//            if (e.getNewState() == Frame.NORMAL) {
-//                System.out.println("窗口从最小化状态恢复到正常大小，重置鼠标");
-//                lastX = width / 2;
-//                lastY = height / 2;
-//            }
-//        });
     }
 
 

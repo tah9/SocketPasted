@@ -35,7 +35,7 @@ public class UiWindowsEvent implements EventFrame.AllEventListener {
     @Override
     public void keyPressed(int keyCode) {
 
-        keyPress.send(dataSocket, keyCode);
+        keyPress.sendToClient(dataSocket, keyCode);
 
 
     }
@@ -43,21 +43,21 @@ public class UiWindowsEvent implements EventFrame.AllEventListener {
     @Override
     public void keyReleased(int keyCode) {
 
-        keyRelease.send(dataSocket, keyCode);
+        keyRelease.sendToClient(dataSocket, keyCode);
 
     }
 
     @Override
     public void MousePressed(int keyCode) {
 
-        mousePress.send(dataSocket, keyCode);
+        mousePress.sendToClient(dataSocket, keyCode);
 
     }
 
     @Override
     public void MouseReleased(int keyCode) {
 
-        mouseRelease.send(dataSocket, keyCode);
+        mouseRelease.sendToClient(dataSocket, keyCode);
 
     }
 
@@ -65,7 +65,7 @@ public class UiWindowsEvent implements EventFrame.AllEventListener {
     public void mouseMove(int x, int y) {
 
         int lParam = (y << 16) | (x & 0xFFFF);
-        mouseMoveMessageProcess.send(dataSocket, lParam);
+        mouseMoveMessageProcess.sendToClient(dataSocket, lParam);
 
     }
 }

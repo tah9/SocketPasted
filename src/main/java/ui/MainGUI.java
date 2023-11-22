@@ -162,7 +162,7 @@ public class MainGUI {
 
                 System.out.println(controlList);
                 SelectedMessageProcess selectedMessageProcess = new SelectedMessageProcess();
-                selectedMessageProcess.send(dataSocket, controlList.toString());
+                selectedMessageProcess.sendToClient(dataSocket, controlList.toString());
 
                 try {
                     Thread.sleep(1000);

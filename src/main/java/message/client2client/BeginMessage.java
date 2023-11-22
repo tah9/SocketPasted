@@ -2,23 +2,26 @@ package message.client2client;
 
 import socket.DataSocket;
 
+/*
+服务器自我循环激活
+ */
 public class BeginMessage implements MessageProcess<String> {
     @Override
-    public void send(DataSocket dso, String data) {
+    public void sendToClient(DataSocket dso, String data) {
         dso.writeChar(DescribeHeader.Begin);
-        dso.writeUTF("开始");
+        dso.writeUTF(data);
         dso.flush();
     }
 
     @Override
-    public void process(DataSocket dso) {
-//        System.out.println(dso.readUTF());
+    public void clientProcess(DataSocket dso) {
         dso.writeChar(DescribeHeader.Begin);
+        dso.writeUTF(dso.readUTF());
         dso.flush();
     }
 
     @Override
-    public String getData(DataSocket dso) {
+    public String transferGetData(DataSocket dso) {
         return dso.readUTF();
     }
 }
