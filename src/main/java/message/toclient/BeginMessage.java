@@ -1,10 +1,14 @@
 package message.toclient;
 
 import message.DescribeHeader;
+import message.MessageProcess;
+import pasted.SysClipboardListener;
 import socket.DataSocket;
+import ui.MainGUI;
+import ui.event.PastedEvent;
 
 /*
-服务器自我循环激活
+
  */
 public class BeginMessage implements MessageProcess<String> {
     @Override
@@ -17,12 +21,22 @@ public class BeginMessage implements MessageProcess<String> {
     @Override
     public void clientProcess(DataSocket dso) {
         dso.writeChar(DescribeHeader.Begin);
-        dso.writeUTF(dso.readUTF());
+        String msg = dso.readUTF();
+        dso.writeUTF(msg);
         dso.flush();
+
+        //被控设备
+        if (!msg.equals(dso.getMachineName())) {
+            if (MainGUI.frame != null) {
+                MainGUI.frame.setVisible(false);
+            }
+        }
+        //设置剪切板监听
+        new SysClipboardListener(new PastedEvent(dso));
     }
 
     @Override
-    public String transferGetData(DataSocket dso) {
+    public String transferExtractData(DataSocket dso) {
         return dso.readUTF();
     }
 }

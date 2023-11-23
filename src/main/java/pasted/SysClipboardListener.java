@@ -68,8 +68,8 @@ public class SysClipboardListener implements ClipboardOwner {
                     try {
                         // 获取文本数据
                         String text = (String) clipboard.getData(DataFlavor.stringFlavor);
-                        System.out.println(text);
                         pastedListener.textPasted(text);
+                        System.out.println("发送的" + text);
                         break;
                     } catch (Exception e) {
                     }

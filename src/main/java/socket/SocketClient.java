@@ -1,7 +1,7 @@
 package socket;
 
 import message.DescribeHeader;
-import message.toclient.MessageProcess;
+import message.MessageProcess;
 import message.MessageProcessFactory;
 import message.client2server.ConnectMessageProcess;
 import ui.kit.Object2bytes;

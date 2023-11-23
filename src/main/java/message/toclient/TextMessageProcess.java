@@ -1,6 +1,7 @@
 package message.toclient;
 
 import message.DescribeHeader;
+import message.MessageProcess;
 import pasted.SysClipboardListener;
 import socket.DataSocket;
 
@@ -13,7 +14,7 @@ public class TextMessageProcess implements MessageProcess<String> {
     /*
     该方法用于服务器转发时提取数据
      */
-    public String transferGetData(DataSocket dso) {
+    public String transferExtractData(DataSocket dso) {
         return dso.readUTF();
     }
 
@@ -36,7 +37,7 @@ public class TextMessageProcess implements MessageProcess<String> {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
         // 添加到剪切板，在此之前修改标志位
-        SysClipboardListener.fromSocket=true;
+        SysClipboardListener.fromSocket = true;
         // 将文本添加到剪切板
         clipboard.setContents(stringSelection, null);
 

@@ -1,7 +1,7 @@
 package message.client2server;
 
 import message.DescribeHeader;
-import message.toclient.MessageProcess;
+import message.MessageProcess;
 import socket.DataSocket;
 
 /*
@@ -26,7 +26,7 @@ public class SelectedMessageProcess implements MessageProcess<String> {
     }
 
     @Override
-    public String transferGetData(DataSocket dso) {
+    public String transferExtractData(DataSocket dso) {
         return dso.readUTF();
     }
 }

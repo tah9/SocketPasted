@@ -2,6 +2,7 @@ package message.toclient;
 
 
 import message.DescribeHeader;
+import message.MessageProcess;
 import socket.DataSocket;
 
 import java.awt.*;
@@ -35,15 +36,13 @@ public class MouseMoveMessageProcess implements MessageProcess<Integer> {
         int x = lParam & 0xFFFF; // 从这个int值中解码出x坐标
         int y = lParam >> 16; // 从这个int值中解码出y坐标
 
-
-        System.out.println(x + "," + y);
         // 移动鼠标到新的位置
         robot.mouseMove(x, y);
 
     }
 
     @Override
-    public Integer transferGetData(DataSocket dso) {
+    public Integer transferExtractData(DataSocket dso) {
         return dso.readInt();
     }
 }

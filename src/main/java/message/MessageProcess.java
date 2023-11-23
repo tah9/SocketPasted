@@ -1,4 +1,4 @@
-package message.toclient;
+package message;
 
 import socket.DataSocket;
 
@@ -21,6 +21,6 @@ public interface MessageProcess<T> {
     /*
     中转站截获消息
      */
-    T transferGetData(DataSocket dso);
+    T transferExtractData(DataSocket dso);
 
 }

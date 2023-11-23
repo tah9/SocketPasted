@@ -1,5 +1,6 @@
 package message.toclient;
 
+import message.MessageProcess;
 import socket.DataSocket;
 
 import java.awt.*;
@@ -33,7 +34,7 @@ public abstract class TapMessageProcess implements MessageProcess<Integer> {
     }
 
     @Override
-    public Integer transferGetData(DataSocket dso) {
+    public Integer transferExtractData(DataSocket dso) {
         return dso.readInt();
     }
 

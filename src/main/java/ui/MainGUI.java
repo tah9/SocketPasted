@@ -3,9 +3,7 @@ package ui;
 import event.EventPanel;
 import message.MessageProcessFactory;
 import message.client2server.SelectedMessageProcess;
-import pasted.SysClipboardListener;
 import socket.*;
-import ui.event.PastedEvent;
 import ui.event.UiWindowsEvent;
 
 import javax.swing.*;
@@ -17,7 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class MainGUI {
-    private JFrame frame;
+    public static JFrame frame;
     private JTextField textField;
     private JTable table;
     private DefaultTableModel tableModel;
@@ -177,14 +175,13 @@ public class MainGUI {
                 ClientMachine machine = machineList.get(machineList.size() - 1);
                 System.out.println(machine);
                 eventPanel.setPreferredSize(new Dimension(machine.getScreenWidth(), machine.getScreenHeight()));
-                JFrame frame = new JFrame("远控窗口");
-                frame.getContentPane().add(eventPanel);
-                frame.pack();
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                JFrame controlFrame = new JFrame("远控窗口");
+                controlFrame.getContentPane().add(eventPanel);
+                controlFrame.pack();
+                controlFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                frame.setVisible(true);
-                //设置剪切板监听
-                new SysClipboardListener(new PastedEvent(dataSocket));
+                controlFrame.setVisible(true);
+
             }
         });
 

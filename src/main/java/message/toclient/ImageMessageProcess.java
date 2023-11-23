@@ -2,6 +2,7 @@ package message.toclient;
 
 
 import message.DescribeHeader;
+import message.MessageProcess;
 import pasted.SysClipboardListener;
 import pasted.imagekits.AddToPasted;
 import socket.DataSocket;
@@ -12,7 +13,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 
-public class ImageMessageProcess implements MessageProcess<byte[]>{
+public class ImageMessageProcess implements MessageProcess<byte[]> {
     @Override
     public void sendToClient(DataSocket targetDso, byte[] data)  {
         targetDso.writeChar(DescribeHeader.Pasted_Image);
@@ -41,7 +42,7 @@ public class ImageMessageProcess implements MessageProcess<byte[]>{
     }
 
     @Override
-    public byte[] transferGetData(DataSocket dso) {
+    public byte[] transferExtractData(DataSocket dso) {
         byte[] data = new byte[dso.readInt()];
         dso.readFully(data);
         return data;

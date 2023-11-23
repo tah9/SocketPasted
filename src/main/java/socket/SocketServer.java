@@ -21,7 +21,7 @@ public class SocketServer {
     /*
     用于保存每个客户端映射的线程
      */
-    public static HashMap<String, ClientTransferThread> clientThreadMap = new HashMap<>();
+    public static HashMap<String, ItemClientTransferThread> clientThreadMap = new HashMap<>();
     private ServerSocket ss;
     private int port = 30000;
 
@@ -42,7 +42,7 @@ public class SocketServer {
                 Socket s = ss.accept();
                 DataSocket onlineSocket = new DataSocket(s);
 
-                new Thread(new ClientTransferThread(onlineSocket)).start();
+                new Thread(new ItemClientTransferThread(onlineSocket)).start();
 
 
             }

@@ -1,7 +1,7 @@
 package message.client2server;
 
 import message.DescribeHeader;
-import message.toclient.MessageProcess;
+import message.MessageProcess;
 import socket.ClientMachine;
 import socket.DataSocket;
 import socket.MachinesOnlineChanged;
@@ -65,7 +65,7 @@ public class ConnectMessageProcess implements MessageProcess<byte[]> {
     }
 
     @Override
-    public byte[] transferGetData(DataSocket dso) {
+    public byte[] transferExtractData(DataSocket dso) {
         byte[] data = new byte[dso.readInt()];
         dso.readFully(data);
         return data;

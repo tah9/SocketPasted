@@ -22,7 +22,6 @@ public class PastedEvent implements SysClipboardListener.PastedListener {
     @Override
     public void textPasted(String text) {
         textMessageProcess.sendToClient(dataSocket, text);
-
     }
 
     @Override

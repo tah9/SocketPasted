@@ -1,11 +1,11 @@
 package socket;
 
-import message.toclient.BeginMessage;
 import message.DescribeHeader;
-import message.toclient.MessageProcess;
 import message.MessageProcessFactory;
 import message.client2server.ConnectMessageProcess;
 import message.client2server.SelectedMessageProcess;
+import message.toclient.BeginMessage;
+import message.MessageProcess;
 import ui.kit.Object2bytes;
 
 import java.io.IOException;
@@ -15,58 +15,56 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
-服务端socket，整个系统的数据收发中转站
+服务端对客户端socket的映射，中转站线程
  */
-public class ClientTransferThread implements Runnable {
+public class ItemClientTransferThread implements Runnable {
 
     private final MessageProcessFactory messageProcessFactory;
-    private DataSocket onlineSocket;
-    private List<DataSocket> targetDosList = new ArrayList<>();
+    private DataSocket ownerDso;
+    private List<DataSocket> targetDsoList = new ArrayList<>();
     private List<DataSocket> allDosList;
-
     public Lock lock = new ReentrantLock();
 
+    String name = "新设备";
 
-    public ClientTransferThread(DataSocket onlineSocket) throws IOException {
+    public ItemClientTransferThread(DataSocket ownerDso) throws IOException {
         messageProcessFactory = new MessageProcessFactory();
-        this.onlineSocket = onlineSocket;
+        this.ownerDso = ownerDso;
         this.allDosList = SocketServer.socketList;
         //连接上服务端后，对自己进行消息收发
-        targetDosList.add(onlineSocket);
+        targetDsoList.add(ownerDso);
     }
 
     public void setTargetClients(String ids) {
         lock.lock();
-        targetDosList.clear();
+        targetDsoList.clear();
         for (DataSocket socket : allDosList) {
             if (ids.contains(socket.getMachineName())) {
-                targetDosList.add(socket);
+                targetDsoList.add(socket);
             }
         }
-        System.out.println("size>>> " + targetDosList.size());
-
         lock.unlock();
-    }
-    public void removeOwner(){
-        lock.lock();
-        targetDosList.remove(onlineSocket);
-        lock.unlock();
+        System.out.println(name + "将要设置的目标" + ids);
+        String finalTargets = "";
+        for (DataSocket dataSocket : targetDsoList) {
+            finalTargets += dataSocket.getMachineName() + " ";
+        }
+        System.out.println(name + "设置完成的目标" + finalTargets);
     }
 
     public void run() {
         //客户端如何设置发送目标？直接分两步走算了，第一步发送设备信息，接收在线设备；第二步发送目标列表。
 
+        String controlDsoName = null;
 
-        String name = "新设备";
         //设备上线处理
         while (true) {
-
-
             System.out.println(name + "   readChar...");
-            char header = onlineSocket.readChar();
+            char header = ownerDso.readChar();
             if (header == DescribeHeader.Begin) {
                 System.out.println(name + "   readUTF...");
-                System.out.println(onlineSocket.readUTF());
+                controlDsoName = ownerDso.readUTF();
+                System.out.println(controlDsoName);
                 System.out.println(name + "   取出字符串");
                 break;
             }
@@ -75,23 +73,22 @@ public class ClientTransferThread implements Runnable {
                 System.out.println(name + "更新在线用户");
                 //接收到客户端的设备信息
                 ConnectMessageProcess connectMessageProcess = new ConnectMessageProcess();
-                byte[] machineData = connectMessageProcess.transferGetData(onlineSocket);
+                byte[] machineData = connectMessageProcess.transferExtractData(ownerDso);
                 ClientMachine machine = (ClientMachine) Object2bytes.byte2Object(machineData);
                 name = machine.getMachineName();
                 System.out.println(name + " 接收到的设备 " + machine);
 
-                onlineSocket.setMachineName(machine.getMachineName());
+                ownerDso.setMachineName(machine.getMachineName());
 
                 SocketServer.listLock.lock();
-                SocketServer.socketList.add(onlineSocket);
+                allDosList.add(ownerDso);
                 SocketServer.machineList.add(machine);
                 SocketServer.listLock.unlock();
                 //将在线设备列表返回给客户端
                 try {
                     byte[] serialize = Object2bytes.serialize(SocketServer.machineList);
-
                     //通知所有在线设备更新
-                    for (DataSocket dataSocket : SocketServer.socketList) {
+                    for (DataSocket dataSocket : allDosList) {
                         connectMessageProcess.sendToClient(dataSocket, serialize);
                     }
                     System.out.println(name + "设备列表发送完毕");
@@ -104,44 +101,47 @@ public class ClientTransferThread implements Runnable {
             //收到服务端控制列表，
             else if (header == DescribeHeader.Machine_Select) {
                 SelectedMessageProcess selectedMessageProcess = new SelectedMessageProcess();
-                String data = selectedMessageProcess.transferGetData(onlineSocket);
+                String data = selectedMessageProcess.transferExtractData(ownerDso);
                 setTargetClients(data);
-                System.out.println(name+"更新目标列表");
+                System.out.println(name + "更新目标列表");
                 BeginMessage beginMessage = new BeginMessage();
 
-                //通知所有在线设备
-                for (DataSocket dataSocket : SocketServer.socketList) {
-
-//                    dataSocket.writeChar('o');
-                    beginMessage.sendToClient(dataSocket, "test");
+                //通知目标设备、主控设备
+                for (DataSocket dataSocket : targetDsoList) {
+                    beginMessage.sendToClient(dataSocket, ownerDso.getMachineName());
                 }
-                System.out.println(name + "通知在线更新完毕，开始控制");
+                beginMessage.sendToClient(ownerDso, ownerDso.getMachineName());
 
             }
-
         }
+        System.out.println(name + "完成目标设备配置");
 
-        System.out.println(name + "开始转发");
 
+        //移除目标中的自己，不可以给自己发消息
+        targetDsoList.remove(ownerDso);
 
-        removeOwner();
+        //没有目标，那就是被控
+        if (targetDsoList.size() == 0) {
+            setTargetClients(controlDsoName);//将目标设为主控，双向通信共享剪切板，被控也要发送剪切板数据
+        }
+        System.out.println(name + "配置完毕，开始转发");
 
         //开始群控时的消息转发
         while (true) {
                 /*
                 每次收到消息，使用对应的事件处理类
                  */
-            char type = onlineSocket.readChar();
+            char type = ownerDso.readChar();
             MessageProcess<?> messageProcess = messageProcessFactory.getProcess(type);
 
             //data要在循环外取出，一条消息发给多目标不能多次read，第一次read完管道指针就移动到尾部了后续读不到
-            Object data = messageProcess.transferGetData(onlineSocket);
+            Object data = messageProcess.transferExtractData(ownerDso);
 
 
                 /*
                 遍历转发
                  */
-            for (DataSocket targetDso : targetDosList) {
+            for (DataSocket targetDso : targetDsoList) {
                 try {
                     ((MessageProcess<Object>) messageProcess).sendToClient(targetDso, data);
                 } catch (Exception e) {
@@ -152,7 +152,7 @@ public class ClientTransferThread implements Runnable {
                     lock.lock();
                     try {
                         allDosList.remove(targetDso);
-                        targetDosList.remove(targetDso);
+                        targetDsoList.remove(targetDso);
                         for (ClientMachine machine : SocketServer.machineList) {
                             if (machine.getSocketId().equals(targetDso.getId())) {
                                 SocketServer.machineList.remove(machine);
