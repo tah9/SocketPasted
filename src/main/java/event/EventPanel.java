@@ -24,8 +24,6 @@ public class EventPanel extends JPanel {
     public int height;
 
 
-
-
     public EventPanel(AllEventListener listener) {
 
         // 获取默认工具包
@@ -52,6 +50,7 @@ public class EventPanel extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                //todo
                 alllistener.MouseReleased(1 << (9 + e.getButton()));
             }
         });
@@ -94,6 +93,30 @@ public class EventPanel extends JPanel {
                 alllistener.keyReleased(e.getKeyCode());
             }
         });
+
+//        new Thread(() -> {
+//
+//            while (true) {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                Date date = new Date();
+//                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//                String date_time = dateFormat.format(date);
+//                // 创建一个StringSelection对象来保存文本
+//                StringSelection stringSelection = new StringSelection(date_time);
+//
+//                // 获取系统剪切板
+//                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+//
+//                // 将文本添加到剪切板
+//                clipboard.setContents(stringSelection, null);
+//
+//            }
+//        }).start();
+
     }
 
 

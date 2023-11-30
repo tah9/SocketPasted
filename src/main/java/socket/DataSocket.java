@@ -29,7 +29,8 @@ public class DataSocket {
     public void setMachineName(String machineName) {
         this.machineName = machineName;
     }
-    public String getMachineName(){
+
+    public String getMachineName() {
         return machineName;
     }
 
@@ -45,14 +46,17 @@ public class DataSocket {
         try {
             return dis.readChar();
         } catch (IOException e) {
+            System.out.println(getMachineName());
             throw new RuntimeException(e);
         }
     }
 
     public void readFully(byte[] data) {
+
         try {
             dis.readFully(data);
         } catch (IOException e) {
+            System.out.println(getMachineName());
             throw new RuntimeException(e);
         }
     }
@@ -82,13 +86,14 @@ public class DataSocket {
     }
 
     public void flush() {
-        try {
-            dos.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            dos.flush();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
-    public void clear(){
+
+    public void clear() {
         try {
             while (dis.available() > 0) {
                 dis.readByte();

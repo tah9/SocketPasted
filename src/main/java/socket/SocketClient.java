@@ -18,8 +18,12 @@ public class SocketClient {
 
 
         Socket s = new Socket(ip, port);
-        this.dataSocket = new DataSocket(s);
+        //Nagle算法的目的是减少网络中小封包的数量，提高网络的利用率。
+        // 但是，当Nagle算法遇到delayed ACK时，可能会导致延迟。
+        //setTcpNoDelay(true)会关闭Nagle算法，使得每次写操作都会立即发送，而不是等待缓冲区填满
+        s.setTcpNoDelay(true);
 
+        this.dataSocket = new DataSocket(s);
         /*
         连接成功后发送设备信息
          */
@@ -28,7 +32,6 @@ public class SocketClient {
         factory.put(DescribeHeader.Connect_Client, connectMessageProcess);
 
         connectMessageProcess.sendToClient(dataSocket, Object2bytes.object2bytes(machine));
-
 
         new Thread(new ClientThread(dataSocket, factory)).start();
         return dataSocket;

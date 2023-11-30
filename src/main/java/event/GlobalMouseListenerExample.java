@@ -13,6 +13,7 @@
 //
 //    public void nativeMousePressed(NativeMouseEvent e) {
 //        System.out.println("Mouse Pressed: " + e.getButton());
+//        System.out.println("Mouse Pressed: " + e.paramString());
 //    }
 //
 //    public void nativeMouseReleased(NativeMouseEvent e) {
@@ -21,6 +22,7 @@
 //
 //    public void nativeMouseMoved(NativeMouseEvent e) {
 //        System.out.println("Mouse Moved: " + e.getX() + ", " + e.getY());
+//        System.out.println(e);
 //    }
 //
 //    public void nativeMouseDragged(NativeMouseEvent e) {

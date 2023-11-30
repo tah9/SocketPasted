@@ -22,15 +22,45 @@ public class MainGUI {
 
     private DataSocket dataSocket;
     private SocketClient client;
+    public static String host = "paste.e3.luyouxia.net:11647";
+
+    public static void press(Robot robot,int key){
+        try {
+            robot.mousePress(key);
+            robot.delay(200);
+            robot.mouseRelease(key);
+        } catch (Exception e) {
+//            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) {
-        MainGUI mainGUI = new MainGUI();
-        mainGUI.frame.setVisible(true);
+        try {
+            System.setProperty("sun.awt.enableExtraMouseButtons", "true");
+            Robot robot = new Robot();
+            for (int i = 0; i < 19; i++) {
+                press(robot, 1<<(9+i));
+
+            }
+//            10 11 12 13 14 15
+//            robot.mousePress(1 << (9 + 5));
+//            robot.mouseRelease(1 << (9 + 5));
+//            robot.mousePress(1 << (9 + 6));
+//            robot.mouseRelease(1 << (9 + 6));
+        } catch (AWTException e) {
+//            throw new RuntimeException(e);
+        }
+//        MainGUI mainGUI = new MainGUI();
+//        mainGUI.frame.setVisible(true);
     }
 
     public MainGUI() {
+
         initialize();
+
+
     }
+
 
 
     private void connectServer(String host, int port, SocketClient client) throws Exception {
@@ -63,7 +93,7 @@ public class MainGUI {
         lblNewLabel.setBounds(10, 10, 120, 15);
         frame.getContentPane().add(lblNewLabel);
 
-        textField = new JTextField("paste.e3.luyouxia.net:11647");
+        textField = new JTextField(host);
         textField.setBounds(10, 35, 200, 21);
         frame.getContentPane().add(textField);
         textField.setColumns(10);
